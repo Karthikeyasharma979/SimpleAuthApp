@@ -6,6 +6,7 @@ app.secret_key = 'your_secret_key'
 def welecome():
     return render_template("index.html")
 
+
 @app.route('/login',methods=["POST","GET"])
 def login():
     return render_template("Login.html")
@@ -37,17 +38,30 @@ def registration():
     if(request.method=="POST"):
         uname = request.form["username"]
         passw = request.form["password"]
+        cpassw = request.form["confirmPassword"]
         email = request.form["email"]
-        check=checkUser(uname,passw,email)
+        check=checkForm(uname,passw,cpassw,email)
         if check!="0":
             return render_template("signup.html",result=check)
         else:
             session["uname"]=uname
             return redirect(url_for("dashboard"))
     
-def checkUser(uname,passw,email):
-        return "0"
+def checkForm(uname,passw,cpassw,email):
+        if(len(passw) >8):
+            if(passw==cpassw):
+                b = checkUser(uname)
+                if(b==False):
+                    return "0"
+                else:
+                    return "Username Exists"
+            else:
+                return "Password and Confirm Password are not same"
+        else:
+            return "Password should be greater than 8"
 
+def checkUser(uname):
+    return False;
 
 
 @app.route("/dashboard")
